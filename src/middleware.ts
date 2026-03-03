@@ -40,5 +40,17 @@ app.get("/profile", () => {
   }
 });
 
+app.get("/product", () => {
+  return { id: 1, name: "Laptop" };
+}, {
+  afterHandle({ response }) {
+    return {
+      success: true,
+      Message: "data tersedia",
+      data: response
+    };
+  }
+});
+
 app.listen(3000);
 console.log("Server running at http://localhost:3000");
