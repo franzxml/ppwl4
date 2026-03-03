@@ -1,4 +1,4 @@
-import { Elysia } from "elysia";
+import { Elysia, t } from "elysia";
 import { openapi } from "@elysiajs/openapi";
 
 const app = new Elysia()
@@ -7,6 +7,16 @@ const app = new Elysia()
 app.onRequest(({ request }) => {
   console.log("📥", request.method, request.url);
   console.log("🕒", new Date().toISOString());
+});
+
+app.onError(({ code, set }) => {
+  if (code === "VALIDATION") {
+    set.status = 400;
+    return {
+      success: false,
+      error: "Validation Error"
+    };
+  }
 });
 
 app.get("/", () => "Hello Middleware");
@@ -50,6 +60,15 @@ app.get("/product", () => {
       data: response
     };
   }
+});
+
+app.post("/login", ({ body }) => {
+  return body;
+}, {
+  body: t.Object({
+    email: t.String({ format: "email" }),
+    password: t.String({ minLength: 8 })
+  })
 });
 
 app.listen(3000);
